@@ -1,4 +1,5 @@
 import os
+import secrets
 from  PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from yournal import app, db, bcrypt
@@ -25,7 +26,7 @@ def register():
         user = User(username=form.username.data, email=form.email.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
-        flash('Your account has been created!', 'success')
+        flash(f'Your account has been created!', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Sign Up', form=form)
 
@@ -65,19 +66,6 @@ def save_picture(form_picture):
     i.save(picture_path)
 
     return picture_fn
-
-
-@app.route("/my_journals")
-@login_required
-def my_journals(username):
-    if post.author != current_user:
-        abort(403)
-    page = request.args.get('page', 1, type=int)
-    user = User.query.filter_by(username=username).first_or_404()
-    posts = Post.query.filter_by(author=user)\
-        .order_by(Post.date_posted.desc())\
-        .paginate(page=page, per_page=5)
-    return render_template('user_posts.html', posts=posts, user=user)
 
 
 @app.route("/account", methods=['GET', 'POST'])
@@ -160,6 +148,13 @@ def user_posts(username):
         .order_by(Post.date_posted.desc())\
         .paginate(page=page, per_page=5)
     return render_template('user_posts.html', posts=posts, user=user)
+
+
+
+
+
+
+
 
 
     
